@@ -18,7 +18,7 @@ An advanced Tic Tac Toe game with user login, AI opponent using Minimax algorith
  
  1 - Clone the repository: git clone https://github.com/refaat-max/TIC-_TAC_-TOE.git
  
- 2 - Build the project using Qt Creator or your preferred C++ IDE.
+ 2 - Build the project using Qt Creator or your preferred C++ IDE or from ExecutableِApp>>AdvancedTicTacToe.exe .
  
  3 - Run the application and enjoy playing Tic Tac Toe! 
  
