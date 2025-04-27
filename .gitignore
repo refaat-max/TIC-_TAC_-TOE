@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# exeptions file
+!ExecutableِApp/
+!ExecutableِApp/**
