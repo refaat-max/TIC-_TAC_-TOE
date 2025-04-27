@@ -34,3 +34,5 @@
 # exeptions file
 !ExecutableِApp/
 !ExecutableِApp/**
+!build/
+!build/**
