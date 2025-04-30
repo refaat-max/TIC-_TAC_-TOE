@@ -31,11 +31,5 @@ jobs:
     - name: Ignore Executable folder
       run: echo "Executable/ folder exists only for local .exe version. Skipping..."
 
-    - name: "CI Result: Passed"
-      if: success()
-      run: echo "✅ All tests passed."
-
-    - name: "CI Result: Failed"
-      if: failure()
-      run: echo "❌ One or more tests failed."
+    
 
