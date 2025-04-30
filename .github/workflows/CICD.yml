@@ -18,12 +18,9 @@ jobs:
     - name: Build the main app
       run: |
         mkdir build
-      g++ src/main.cpp \
-        src/gamelogic.cpp \
-        GUI/gamewindow.cpp \
-        GUI/mainwindow.cpp \
-        sql_codes/userauth.cpp \
-        -I./src -I./GUI -I./sql_codes \
+        g++ -fPIC -I./GUI -I./src -I./sql_codes -I/usr/include/qt -I/usr/include/qt/QtWidgets \
+        -o build/AdvancedTicTacToe \
+        src/main.cpp src/gamelogic.cpp GUI/gamewindow.cpp GUI/mainwindow.cpp sql_codes/userauth.cpp \
         -lQt5Widgets -lQt5Gui -lQt5Core
     
 
