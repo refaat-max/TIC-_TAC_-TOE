@@ -51,9 +51,9 @@ jobs:
     # Step 4: Run the unit tests
     - name: Run unit tests
       run: |
-        ./test_gamelogic
-        ./test_ai
-        ./test_userauth
+        ./testgamelogic
+        ./testai
+        ./testuserauth
 
   deploy:
     runs-on: ubuntu-latest
