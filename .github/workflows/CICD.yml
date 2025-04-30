@@ -10,24 +10,28 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Find Qt include directories (for debugging)
+      run: |
+        sudo find /usr -name QApplication.h
+        sudo find /usr -name QMainWindow.h
+
     - name: Install Qt and g++
       run: |
         sudo apt-get update
-        sudo apt-get install -y qtbase5-dev g++
+        sudo apt-get install -y qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qttools5-dev-tools libqt5sql5-sqlite
 
     - name: Build the main app
       run: |
         mkdir build
-        g++ -fPIC -I./GUI -I./src -I./sql_codes -I/usr/include/qt -I/usr/include/qt/QtWidgets \
-        -o build/AdvancedTicTacToe \
+        g++ -fPIC -I$(pkg-config --cflags Qt5Core Qt5Gui Qt5Widgets) -o build/AdvancedTicTacToe \
         src/main.cpp src/gamelogic.cpp GUI/gamewindow.cpp GUI/mainwindow.cpp sql_codes/userauth.cpp \
-        -lQt5Widgets -lQt5Gui -lQt5Core
-    
+        $(pkg-config --libs Qt5Core Qt5Gui Qt5Widgets)
 
     - name: Build and run tests
       run: |
-        g++ -o build/test_gamelogic test_gamelogic.cpp gamelogic.cpp
-        ./build/test_gamelogic
+        mkdir build_test
+        g++ -o build_test/test_gamelogic test/test_gamelogic.cpp src/gamelogic.cpp -I./src
+        ./build_test/test_gamelogic
 
     - name: Ignore Executable folder
       run: echo "Executable/ folder exists only for local .exe version. Skipping..."
