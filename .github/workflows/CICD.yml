@@ -1,67 +1,35 @@
-name: Advanced Tic Tac Toe - CI (g++ version)
+name: C++ CI/CD with Qt
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install dependencies
+    - name: Install Qt and g++
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ qtbase5-dev qt5-default qtdeclarative5-dev libqt5sql5-sqlite libsqlite3-dev xvfb
+        sudo apt-get install -y qtbase5-dev g++
 
-    - name: Create build directory
-      run: mkdir -p build
-
-    - name: Generate MOC files for Qt
+    - name: Build the main app
       run: |
-        # Generate moc files for Qt classes
-        moc -o build/moc_gamewindow.cpp GUI/gamewindow.h
-        moc -o build/moc_mainwindow.cpp GUI/mainwindow.h
+        mkdir build
+        g++ -fPIC -I. -I/usr/include/qt -I/usr/include/qt/QtWidgets \
+        -o build/AdvancedTicTacToe \
+        main.cpp gamelogic.cpp gamewindow.cpp mainwindow.cpp userauth.cpp \
+        -lQt5Widgets -lQt5Gui -lQt5Core
 
-    - name: Build the main application
+    - name: Build and run tests
       run: |
-        g++ -o build/AdvancedTicTacToe \
-          src/main.cpp \
-          src/gamelogic.cpp \
-          GUI/gamewindow.cpp \
-          GUI/mainwindow.cpp \
-          sql_codes/userauth.cpp \
-          build/moc_gamewindow.cpp \
-          build/moc_mainwindow.cpp \
-          -I./src -I./GUI -I./sql_codes \
-          -I/usr/include/x86_64-linux-gnu/qt5 \
-          -I/usr/include/x86_64-linux-gnu/qt5/QtCore \
-          -I/usr/include/x86_64-linux-gnu/qt5/QtGui \
-          -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets \
-          -I/usr/include/x86_64-linux-gnu/qt5/QtSql \
-          -fPIC -std=c++14 \
-          -lQt5Core -lQt5Gui -lQt5Widgets -lQt5Sql -lsqlite3
+        g++ -o build/test_gamelogic test_gamelogic.cpp gamelogic.cpp
+        ./build/test_gamelogic
 
-    - name: Build test_gamelogic
-      run: |
-        g++ -o build/test_gamelogic \
-          tests/test_gamelogic.cpp \
-          src/gamelogic.cpp \
-          -I./src -I./tests \
-          -std=c++14
-
-    - name: Run test_gamelogic
-      run: |
-        cd build
-        ./test_gamelogic
-
-    - name: Run the application with Xvfb (if needed for testing)
-      run: |
-        cd build
-        xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./AdvancedTicTacToe || true
+    - name: Ignore Executable folder
+      run: echo "Executable/ folder exists only for local .exe version. Skipping..."
 
     - name: "CI Result: Passed"
       if: success()
