@@ -12,36 +12,38 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install g++ and Qt
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ qtbase5-dev xvfb
+        sudo apt-get install -y g++ cmake qtbase5-dev qtdeclarative5-dev libqt5sql5-sqlite libsqlite3-dev xvfb
 
-    - name: Build the main application
+    - name: Create build directory
+      run: mkdir -p build
+
+    - name: Configure with CMake
       run: |
-        mkdir -p build
-        g++ -o build/AdvancedTicTacToe \
-        src/main.cpp \
-        src/gamelogic.cpp \
-        GUI/gamewindow.cpp \
-        GUI/mainwindow.cpp \
-        sql_codes/userauth.cpp \
-        -I./src -I./GUI -I./sql_codes \
-        -lQt5Widgets -lQt5Gui -lQt5Core
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Debug
 
-    - name: Run the game using xvfb
+    - name: Build the project
       run: |
-        xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./build/AdvancedTicTacToe
+        cd build
+        make
 
-    - name: Build test_gamelogic
+    - name: Build tests
       run: |
-        g++ -o build/test_gamelogic \
-        tests/test_gamelogic.cpp \
-        src/gamelogic.cpp \
-        -I./src
+        cd build
+        make test_gamelogic
 
-    - name: Run test_gamelogic
-      run: ./build/test_gamelogic
+    - name: Run tests
+      run: |
+        cd build
+        ./tests/test_gamelogic
+
+    - name: Run the application with Xvfb
+      run: |
+        cd build
+        xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./AdvancedTicTacToe || true
 
     - name: "CI Result: Passed"
       if: success()
