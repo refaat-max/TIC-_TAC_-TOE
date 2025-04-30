@@ -11,99 +11,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Step 2: Install Qt 6 and dependencies
-    - name: Install Qt 6
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y qt6-base-dev qt6-tools-dev libqt6sql6-sqlite build-essential
+        sudo apt-get install -y g++ qtbase5-dev libqt5sql5 sqlite3 xvfb
 
-    # Step 3: Configure and build the project
-    - name: Build the project
+    - name: Build the project manually with g++
       run: |
-        qmake6 AdvancedTicTacToe.pro
-        make
+        mkdir -p build
+        g++ -o build/AdvancedTicTacToe \
+        src/main.cpp src/gamelogic.cpp GUI/gamewindow.cpp GUI/mainwindow.cpp sql_codes/userauth.cpp \
+        -I./src -I./GUI -I./sql_codes \
+        -lQt5Widgets -lQt5Gui -lQt5Core -lQt5Sql
 
   test:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-    # Step 1: Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Step 2: Install Qt 6 and dependencies
-    - name: Install Qt 6
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y qt6-base-dev qt6-tools-dev libqt6sql6-sqlite build-essential
+        sudo apt-get install -y g++ qtbase5-dev libqt5sql5 sqlite3 xvfb
 
-    # Step 3: Configure and build the project (including tests)
-    - name: Build the project
+    - name: Build unit tests
       run: |
-        qmake6 AdvancedTicTacToe.pro
-        make
+        mkdir -p build
+        g++ -o build/test_gamelogic tests/test_gamelogic.cpp src/gamelogic.cpp -I./src
+        g++ -o build/test_ai tests/test_ai.cpp -I./src
+        g++ -o build/test_userauth tests/test_userauth.cpp sql_codes/userauth.cpp -I./sql_codes
 
-    # Step 4: Run the unit tests
     - name: Run unit tests
       run: |
-        ./testgamelogic
-        ./testai
-        ./testuserauth
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'  # Only deploy on push to main
-
-    steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    # Step 2: Install Qt 6 and dependencies
-    - name: Install Qt 6
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y qt6-base-dev qt6-tools-dev libqt6sql6-sqlite build-essential
-
-    # Step 3: Configure and build the project
-    - name: Build the project
-      run: |
-        qmake6 AdvancedTicTacToe.pro
-        make
-
-    # Step 4: Package the binary
-    - name: Package the binary
-      run: |
-        mkdir -p release
-        cp AdvancedTicTacToe release/
-        tar -czvf advanced-tictactoe-${{ github.sha }}.tar.gz -C release AdvancedTicTacToe
-
-    # Step 5: Create a GitHub Release and upload the artifact
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: release-${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./advanced-tictactoe-${{ github.sha }}.tar.gz
-        asset_name: advanced-tictactoe-${{ github.sha }}.tar.gz
-        asset_content_type: application/gzip
+        ./build/test_gamelogic
+        ./build/test_ai
+        ./build/test_userauth
 
     
 
