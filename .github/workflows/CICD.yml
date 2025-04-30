@@ -1,0 +1,44 @@
+name: Advanced Tic Tac Toe - CI with g++
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install g++ and Qt dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ qtbase5-dev xvfb
+
+    - name: Build the main app
+      run: |
+        mkdir -p build
+        g++ -o build/AdvancedTicTacToe \
+        main.cpp gamelogic.cpp gamewindow.cpp mainwindow.cpp userauth.cpp \
+        -lQt5Widgets -lQt5Gui -lQt5Core
+
+    - name: Run the game (headless GUI with xvfb)
+      run: |
+        xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./build/AdvancedTicTacToe
+
+    - name: Build test_gamelogic
+      run: |
+        g++ -o build/test_gamelogic tests/test_gamelogic.cpp gamelogic.cpp
+
+    - name: Run test_gamelogic
+      run: ./build/test_gamelogic
+
+    - name: Set status check (mark as success)
+      if: success()
+      run: echo "✅ All tests passed."
+
+    - name: Set status check (mark as failed)
+      if: failure()
+      run: echo "❌ Tests failed."
