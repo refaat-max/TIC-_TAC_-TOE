@@ -15,32 +15,50 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ cmake qtbase5-dev qtdeclarative5-dev libqt5sql5-sqlite libsqlite3-dev xvfb
+        sudo apt-get install -y g++ qtbase5-dev qt5-default qtdeclarative5-dev libqt5sql5-sqlite libsqlite3-dev xvfb
 
     - name: Create build directory
       run: mkdir -p build
 
-    - name: Configure with CMake
+    - name: Generate MOC files for Qt
+      run: |
+        # Generate moc files for Qt classes
+        moc -o build/moc_gamewindow.cpp GUI/gamewindow.h
+        moc -o build/moc_mainwindow.cpp GUI/mainwindow.h
+
+    - name: Build the main application
+      run: |
+        g++ -o build/AdvancedTicTacToe \
+          src/main.cpp \
+          src/gamelogic.cpp \
+          GUI/gamewindow.cpp \
+          GUI/mainwindow.cpp \
+          sql_codes/userauth.cpp \
+          build/moc_gamewindow.cpp \
+          build/moc_mainwindow.cpp \
+          -I./src -I./GUI -I./sql_codes \
+          -I/usr/include/x86_64-linux-gnu/qt5 \
+          -I/usr/include/x86_64-linux-gnu/qt5/QtCore \
+          -I/usr/include/x86_64-linux-gnu/qt5/QtGui \
+          -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets \
+          -I/usr/include/x86_64-linux-gnu/qt5/QtSql \
+          -fPIC -std=c++14 \
+          -lQt5Core -lQt5Gui -lQt5Widgets -lQt5Sql -lsqlite3
+
+    - name: Build test_gamelogic
+      run: |
+        g++ -o build/test_gamelogic \
+          tests/test_gamelogic.cpp \
+          src/gamelogic.cpp \
+          -I./src -I./tests \
+          -std=c++14
+
+    - name: Run test_gamelogic
       run: |
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Debug
+        ./test_gamelogic
 
-    - name: Build the project
-      run: |
-        cd build
-        make
-
-    - name: Build tests
-      run: |
-        cd build
-        make test_gamelogic
-
-    - name: Run tests
-      run: |
-        cd build
-        ./tests/test_gamelogic
-
-    - name: Run the application with Xvfb
+    - name: Run the application with Xvfb (if needed for testing)
       run: |
         cd build
         xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./AdvancedTicTacToe || true
