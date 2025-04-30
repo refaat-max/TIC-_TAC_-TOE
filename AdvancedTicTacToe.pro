@@ -8,15 +8,15 @@ TEMPLATE = app
 TARGET = AdvancedTicTacToe
 
 SOURCES += \
-    src/main.cpp \
-   GUI/gamelogic.cpp \
-    GUI/gamewindow.cpp \
-        sql codes/userauth.cpp
+    main.cpp \
+   gamelogic.cpp \
+    gamewindow.cpp \
+    userauth.cpp
 
 HEADERS += \
-    src/gamelogic.h \
-    GUI/gamewindow.h \
-    sql codes/userauth.h
+    gamelogic.h \
+    gamewindow.h \
+    userauth.h
 
 # Test target
 CONFIG(test) {
@@ -25,13 +25,13 @@ CONFIG(test) {
     QT += testlib
     INCLUDEPATH += .
     SOURCES = \
-        tests/test_gamelogic.cpp \
-        tests/test_ai.cpp \
-        tests/test_userauth.cpp \
-        src/gamelogic.cpp \
-        sql codes/userauth.cpp
+        test_gamelogic.cpp \
+        test_ai.cpp \
+        test_userauth.cpp \
+        gamelogic.cpp \
+        userauth.cpp
     HEADERS = \
-        tests/test_gamelogic.h \
-        tests/test_ai.h \
-        tests/test_userauth.h
+        test_gamelogic.h \
+        test_ai.h \
+        test_userauth.h
 }
