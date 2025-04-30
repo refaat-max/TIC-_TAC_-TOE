@@ -43,22 +43,11 @@ jobs:
     - name: Run test_gamelogic
       run: ./build/test_gamelogic
 
-    - name: CI Result: ✅ Passed
+    - name: "CI Result: Passed"
       if: success()
       run: echo "✅ All tests passed."
 
-    - name: CI Result: ❌ Failed
+    - name: "CI Result: Failed"
       if: failure()
       run: echo "❌ One or more tests failed."
 
-
-    - name: Run test_gamelogic
-      run: ./build/test_gamelogic
-
-    - name: Set status check (mark as success)
-      if: success()
-      run: echo "✅ All tests passed."
-
-    - name: Set status check (mark as failed)
-      if: failure()
-      run: echo "❌ Tests failed."
