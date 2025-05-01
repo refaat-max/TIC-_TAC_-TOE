@@ -93,21 +93,12 @@ jobs:
 
     # Step 5: Create a GitHub Release and upload the artifact
     - name: Create Release
-      uses: actions/create-release@v1.1.4  # Use a specific version
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
         tag_name: release-${{ github.sha }}
-        release_name: Release ${{ github.sha }}
+        name: Release ${{ github.sha }}
         draft: false
         prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1.0.2  # Use a specific version
+        files: ./TicTacToeApp/advanced-tictactoe-${{ github.sha }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./TicTacToeApp/advanced-tictactoe-${{ github.sha }}.tar.gz
-        asset_name: advanced-tictactoe-${{ github.sha }}.tar.gz
-        asset_content_type: application/gzip
