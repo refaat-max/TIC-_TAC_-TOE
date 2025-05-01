@@ -23,6 +23,7 @@ jobs:
 
     # Step 3: Configure and build the project
     - name: Build the project
+      working-directory: ./TicTacToeApp
       run: |
         qmake6 AdvancedTicTacToe.pro
         make
@@ -44,16 +45,16 @@ jobs:
 
     # Step 3: Configure and build the project (including tests)
     - name: Build the project
+      working-directory: ./TicTacToeApp
       run: |
-        qmake6 AdvancedTicTacToe.pro
+        qmake6 AdvancedTicTacToe.pro CONFIG+=test
         make
 
     # Step 4: Run the unit tests
     - name: Run unit tests
+      working-directory: ./TicTacToeApp
       run: |
-        ./test_gamelogic
-        ./test_ai
-        ./test_userauth
+        ./TicTacToeTests
 
   deploy:
     runs-on: ubuntu-latest
@@ -73,12 +74,14 @@ jobs:
 
     # Step 3: Configure and build the project
     - name: Build the project
+      working-directory: ./TicTacToeApp
       run: |
         qmake6 AdvancedTicTacToe.pro
         make
 
     # Step 4: Package the binary
     - name: Package the binary
+      working-directory: ./TicTacToeApp
       run: |
         mkdir -p release
         cp AdvancedTicTacToe release/
@@ -101,9 +104,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./advanced-tictactoe-${{ github.sha }}.tar.gz
+        asset_path: ./TicTacToeApp/advanced-tictactoe-${{ github.sha }}.tar.gz
         asset_name: advanced-tictactoe-${{ github.sha }}.tar.gz
         asset_content_type: application/gzip
-
-    
-
