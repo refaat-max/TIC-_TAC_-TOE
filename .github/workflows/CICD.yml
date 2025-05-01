@@ -1,5 +1,9 @@
 name: CI/CD Pipeline for Advanced Tic-Tac-Toe
 
+# Add permissions for the workflow
+permissions:
+  contents: write  # Required for creating releases
+
 on:
   push:
     branches: [ "main" ]
@@ -89,7 +93,7 @@ jobs:
 
     # Step 5: Create a GitHub Release and upload the artifact
     - name: Create Release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v1.1.4  # Use a specific version
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -99,7 +103,7 @@ jobs:
         prerelease: false
 
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.0.2  # Use a specific version
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
