@@ -36,3 +36,5 @@
 !ExecutableِApp/**
 !build/
 !build/**
+!TicTacToeApp/
+!TicTacToeApp/**
